@@ -41,7 +41,18 @@ class _WordsPageState extends State<WordsPage> {
   int playDelay = 7000;
   int indexWord;
   var random = Random();
-  bool blueTheme = true;
+  int indexColor = 0;
+  Color bgWord = primaryColor;
+  final List<Color> bgWords = [
+    purpleColor,
+    primaryColor,
+    primary50Color,
+    creamColor,
+    pinkColor,
+    orangeColor,
+    yellowColor,
+    greenColor,
+  ];
 
   final List<String> autoplayitems = [
     '(off)',
@@ -87,7 +98,7 @@ class _WordsPageState extends State<WordsPage> {
                           width: double.infinity,
                           height: 130,
                           decoration: BoxDecoration(
-                              color: blueTheme ? primaryColor : yellowColor,
+                              color: bgWord,
                               borderRadius: const BorderRadius.only(
                                   bottomLeft: Radius.circular(25),
                                   bottomRight: Radius.circular(25))),
@@ -103,13 +114,19 @@ class _WordsPageState extends State<WordsPage> {
                               InkWell(
                                 onTap: () {
                                   setState(() {
-                                    if (blueTheme == true) {
-                                      blueTheme = false;
+                                    if (indexColor == bgWords.length - 1) {
+                                      indexColor = 0;
+                                      setState(() {
+                                        bgWord = bgWords[indexColor];
+                                      });
                                     } else {
-                                      blueTheme = true;
+                                      indexColor++;
+                                      setState(() {
+                                        bgWord = bgWords[indexColor];
+                                      });
                                     }
                                   });
-                                  print(blueTheme);
+                                  print(bgWord);
                                 },
                                 child: const Icon(
                                   Icons.color_lens_outlined,
@@ -166,7 +183,7 @@ class _WordsPageState extends State<WordsPage> {
                                       alignment: Alignment.bottomCenter,
                                       child: Text(
                                         "${indexWord + 1} / $itemCount",
-                                        style: greyTextStyle.copyWith(
+                                        style: blackTextStyle.copyWith(
                                             fontSize: 16),
                                       ),
                                     ),
@@ -176,6 +193,7 @@ class _WordsPageState extends State<WordsPage> {
                             );
                           }),
                           control: const SwiperControl(
+                              color: darkColor,
                               padding: EdgeInsets.symmetric(horizontal: 20)),
                           itemCount: data?.length ?? 0,
                           itemBuilder: (BuildContext context, int index) {

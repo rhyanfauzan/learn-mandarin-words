@@ -25,7 +25,17 @@ class _CardWordsState extends State<CardWords> {
   int indexColor = 0;
   Color bgWord = whiteColor;
   var prefs;
-  final List<Color> bgWords = [whiteColor, blue400Color, greenColor];
+  final List<Color> bgWords = [
+    whiteColor,
+    primaryColor,
+    primary50Color,
+    creamColor,
+    pinkColor,
+    orangeColor,
+    yellowColor,
+    greenColor,
+    purpleColor,
+  ];
 
   initprefs() async {
     // Obtain shared preferences.
@@ -45,6 +55,7 @@ class _CardWordsState extends State<CardWords> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: bgWord,
         borderRadius: BorderRadius.circular(6),
@@ -72,7 +83,7 @@ class _CardWordsState extends State<CardWords> {
                   print("bgWord $bgWord");
                 },
                 child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  padding: EdgeInsets.symmetric(vertical: 20),
                   child: Icon(
                     Icons.format_color_fill_rounded,
                     size: 24,
@@ -114,14 +125,14 @@ class _CardWordsState extends State<CardWords> {
                 Text(
                   widget.pinyin ?? '',
                   overflow: TextOverflow.ellipsis,
-                  style: greyTextStyle.copyWith(fontSize: 18),
+                  style: blackTextStyle.copyWith(fontSize: 22),
                 ),
                 const SizedBox(
                   height: 4,
                 ),
                 Text(
                   widget.translate ?? '',
-                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                   style: blackTextStyle.copyWith(fontSize: 20),
                 ),
               ],

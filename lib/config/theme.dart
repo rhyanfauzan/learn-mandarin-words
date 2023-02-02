@@ -21,6 +21,8 @@ const Color darkBackgroundColor = Color(0xff020518);
 const Color numberBackgroundColor = Color(0xff1A1D2E);
 const Color redColor = Color(0xffFF2566);
 const Color pinkColor = Color(0xffFFC0CB);
+const Color creamColor = Color(0xffFFFDD0);
+const Color purpleColor = Color(0xff4A179E);
 
 TextStyle blackTextStyle = GoogleFonts.poppins(
   color: blackColor,
