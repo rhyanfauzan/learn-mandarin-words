@@ -41,9 +41,11 @@ class _WordsPageState extends State<WordsPage> {
   int playDelay = 7000;
   int indexWord;
   var random = Random();
+  bool blueTheme = true;
 
   final List<String> autoplayitems = [
     '(off)',
+    '2 detik',
     '4 detik',
     '6 detik',
     '8 detik',
@@ -79,54 +81,121 @@ class _WordsPageState extends State<WordsPage> {
                 print("words 1: ${data?[0].chinese}");
                 return ListView(
                   children: [
-                    const HeaderProfile(),
+                    Stack(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          height: 130,
+                          decoration: BoxDecoration(
+                              color: blueTheme ? primaryColor : yellowColor,
+                              borderRadius: const BorderRadius.only(
+                                  bottomLeft: Radius.circular(25),
+                                  bottomRight: Radius.circular(25))),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    if (blueTheme == true) {
+                                      blueTheme = false;
+                                    } else {
+                                      blueTheme = true;
+                                    }
+                                  });
+                                  print(blueTheme);
+                                },
+                                child: const Icon(
+                                  Icons.color_lens_outlined,
+                                  size: 24,
+                                  color: whiteColor,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              )
+                            ],
+                          ),
+                        ),
+                        Center(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                height: 40,
+                              ),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(250),
+                                child: Image.asset(
+                                  AppAsset.avatar,
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                     Container(
-                      height: mHeight,
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 20),
-                      child: Swiper(
-                        index: indexWord,
-                        autoplay: autoPlay,
-                        autoplayDelay: playDelay,
-                        pagination: SwiperCustomPagination(builder:
-                            (BuildContext context, SwiperPluginConfig config) {
-                          int activeIndex = indexWord;
-                          int itemCount = config.itemCount + 1;
-                          return Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Stack(
-                              children: [
-                                Positioned.fill(
-                                  child: Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Text(
-                                      "${indexWord + 1} / $itemCount",
-                                      style:
-                                          greyTextStyle.copyWith(fontSize: 16),
+                        height: mHeight,
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 20),
+                        child: Swiper(
+                          index: indexWord,
+                          autoplay: autoPlay,
+                          autoplayDelay: playDelay,
+                          pagination: SwiperCustomPagination(builder:
+                              (BuildContext context,
+                                  SwiperPluginConfig config) {
+                            int activeIndex = indexWord;
+                            int itemCount = config.itemCount + 1;
+                            return Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Stack(
+                                children: [
+                                  Positioned.fill(
+                                    child: Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Text(
+                                        "${indexWord + 1} / $itemCount",
+                                        style: greyTextStyle.copyWith(
+                                            fontSize: 16),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                        control: const SwiperControl(
-                            padding: EdgeInsets.symmetric(horizontal: 20)),
-                        itemCount: data?.length ?? 0,
-                        itemBuilder: (BuildContext context, int index) {
-                          if (randomPlay == true) {
-                            indexWord = random.nextInt(data!.length);
-                          } else {
-                            indexWord = index;
-                          }
-                          return CardWords(
-                            chinese: data?[indexWord].chinese,
-                            pinyin: data?[indexWord].pinying,
-                            translate: data?[indexWord].translate,
-                          );
-                        },
-                      ),
-                    ),
+                                ],
+                              ),
+                            );
+                          }),
+                          control: const SwiperControl(
+                              padding: EdgeInsets.symmetric(horizontal: 20)),
+                          itemCount: data?.length ?? 0,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (randomPlay == true) {
+                              indexWord = random.nextInt(data!.length);
+                              return CardWords(
+                                chinese: data[indexWord].chinese,
+                                pinyin: data[indexWord].pinying,
+                                translate: data[indexWord].translate,
+                              );
+                            } else {
+                              indexWord = index;
+                              return CardWords(
+                                chinese: data?[indexWord].chinese,
+                                pinyin: data?[indexWord].pinying,
+                                translate: data?[indexWord].translate,
+                              );
+                            }
+                          },
+                        )),
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -140,7 +209,10 @@ class _WordsPageState extends State<WordsPage> {
                             onChanged: (value) {
                               setState(() {
                                 selectedValue = value;
-                                if (selectedValue == '4 detik') {
+                                if (selectedValue == '2 detik') {
+                                  autoPlay = true;
+                                  playDelay = 2000;
+                                } else if (selectedValue == '4 detik') {
                                   autoPlay = true;
                                   playDelay = 4000;
                                 } else if (selectedValue == '6 detik') {
@@ -153,9 +225,9 @@ class _WordsPageState extends State<WordsPage> {
                                   autoPlay = false;
                                 }
                               });
-                              print("autoPlay $autoPlay");
-                              print("randomPlay $randomPlay");
-                              print("playDelay $playDelay");
+                              print("autoPlay ");
+                              print("randomPlay ");
+                              print("playDelay ");
                             },
                           ),
                           InkWell(
@@ -212,75 +284,5 @@ class _WordsPageState extends State<WordsPage> {
                 );
               }
             }));
-  }
-}
-
-class HeaderProfile extends StatefulWidget {
-  const HeaderProfile({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<HeaderProfile> createState() => _HeaderProfileState();
-}
-
-class _HeaderProfileState extends State<HeaderProfile> {
-  bool blueTheme = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          height: 130,
-          decoration: BoxDecoration(
-              color: blueTheme ? primaryColor : yellowColor,
-              borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(25),
-                  bottomRight: Radius.circular(25))),
-        ),
-        InkWell(
-          onTap: () {
-            setState(() {
-              if (blueTheme == true) {
-                blueTheme = false;
-              } else {
-                blueTheme = true;
-              }
-            });
-            print(blueTheme);
-          },
-          child: Container(
-            margin: const EdgeInsets.only(right: 20, top: 20),
-            alignment: Alignment.topRight,
-            child: Icon(
-              Icons.color_lens_outlined,
-              size: 24,
-              color: whiteColor,
-            ),
-          ),
-        ),
-        Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(
-                height: 40,
-              ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(250),
-                child: Image.asset(
-                  AppAsset.avatar,
-                  width: 120,
-                  height: 120,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
   }
 }
