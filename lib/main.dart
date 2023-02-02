@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mandarin_indo_app/feature/ui/home.dart';
 
 import 'config/theme.dart';
+import 'feature/ui/home_page.dart';
 
 void main() {
   runApp(const MyApp());
