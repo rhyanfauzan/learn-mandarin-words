@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable, avoid_print, prefer_typing_uninitialized_variables
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../config/theme.dart';
@@ -54,6 +55,17 @@ class _CardWordsState extends State<CardWords> {
 
   @override
   Widget build(BuildContext context) {
+    var mWidth = MediaQuery.of(context).size.width;
+    print("mWidth $mWidth");
+    double fontSizeChinese;
+    double fontSize;
+    if (mWidth < 600) {
+      fontSize = 28;
+      fontSizeChinese = 48;
+    } else {
+      fontSize = 60;
+      fontSizeChinese = 70;
+    }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
@@ -112,28 +124,51 @@ class _CardWordsState extends State<CardWords> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  '${widget.chinese}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style:
-                      blackTextStyle.copyWith(fontSize: 36, fontWeight: bold),
+                SizedBox(
+                  width: mWidth / 2,
+                  child: AutoSizeText(widget.chinese ?? '',
+                      minFontSize: 20,
+                      maxFontSize: 70,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      style: blackTextStyle.copyWith(
+                          fontSize: fontSizeChinese, fontWeight: bold)),
                 ),
+                // Text(
+                //   '${widget.chinese}',
+                //   maxLines: 1,
+                //   overflow: TextOverflow.ellipsis,
+                //   style:
+                //       blackTextStyle.copyWith(fontSize: 36, fontWeight: bold),
+                // ),
                 const SizedBox(
-                  height: 20,
+                  height: 30,
                 ),
-                Text(
-                  widget.pinyin ?? '',
-                  overflow: TextOverflow.ellipsis,
-                  style: blackTextStyle.copyWith(fontSize: 22),
+                SizedBox(
+                  width: mWidth / 2,
+                  child: AutoSizeText(widget.pinyin ?? '',
+                      minFontSize: 14,
+                      maxFontSize: 70,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      style: blackTextStyle.copyWith(
+                          fontSize: fontSize, fontWeight: regular)),
                 ),
-                const SizedBox(
-                  height: 4,
+                Container(
+                  margin: EdgeInsets.symmetric(
+                      horizontal: mWidth / 4, vertical: 20),
+                  height: 1,
+                  color: darkColor,
                 ),
-                Text(
-                  widget.translate ?? '',
-                  textAlign: TextAlign.center,
-                  style: blackTextStyle.copyWith(fontSize: 20),
+                SizedBox(
+                  width: mWidth / 2,
+                  child: AutoSizeText(widget.translate ?? '',
+                      minFontSize: 20,
+                      maxFontSize: 70,
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      style: blackTextStyle.copyWith(
+                          fontSize: fontSize, fontWeight: regular)),
                 ),
               ],
             ),
