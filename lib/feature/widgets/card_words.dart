@@ -154,11 +154,8 @@ class _CardWordsState extends State<CardWords> {
                       style: blackTextStyle.copyWith(
                           fontSize: fontSize, fontWeight: regular)),
                 ),
-                Container(
-                  margin: EdgeInsets.symmetric(
-                      horizontal: mWidth / 4, vertical: 20),
-                  height: 1,
-                  color: darkColor,
+                const SizedBox(
+                  height: 10,
                 ),
                 SizedBox(
                   width: mWidth / 2,

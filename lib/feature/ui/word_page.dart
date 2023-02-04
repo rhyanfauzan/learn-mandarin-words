@@ -1,9 +1,13 @@
-// ignore_for_file: avoid_print, prefer_typing_uninitialized_variables, must_be_immutable, no_logic_in_create_state, unused_local_variable, use_build_context_synchronously
+// ignore_for_file: avoid_print, prefer_typing_uninitialized_variables, must_be_immutable, no_logic_in_create_state, unused_local_variable, use_build_context_synchronously, override_on_non_overriding_member
 
+import 'dart:async';
 import 'dart:math';
 
+import 'package:countdown_progress_indicator/countdown_progress_indicator.dart';
 import 'package:dropdown_button2/custom_dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_beep/flutter_beep.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 import 'package:mandarin_indo_app/core/model/kosakata_model.dart';
 import 'package:mandarin_indo_app/core/services/lmi_service.dart';
@@ -18,27 +22,33 @@ class WordsPage extends StatefulWidget {
       {super.key,
       this.indexWord = 0,
       required this.selectFetch,
-      required this.mypageword});
+      required this.mypageword,
+      required this.title});
   int indexWord;
   int mypageword;
   Future<KosaKataModel> selectFetch;
+  String title;
 
   @override
   State<WordsPage> createState() =>
-      _WordsPageState(indexWord, selectFetch, mypageword);
+      _WordsPageState(indexWord, selectFetch, mypageword, title);
 }
 
 class _WordsPageState extends State<WordsPage> {
-  _WordsPageState(this.indexWord, this.selectFetch, this.mypageword);
+  _WordsPageState(
+      this.indexWord, this.selectFetch, this.mypageword, this.title);
 
+  String title;
   KosaKataModel kosaKataModel = KosaKataModel();
   late Future<KosaKataModel> futureWords;
   Future<KosaKataModel> selectFetch;
   LmiService lmiService = LmiService();
+  final _controller = CountDownController();
   int mypageword;
   bool autoPlay = true;
   bool randomPlay = false;
   int playDelay = 7000;
+  bool timer = false;
   int indexWord;
   var random = Random();
   int indexColor = 0;
@@ -77,11 +87,63 @@ class _WordsPageState extends State<WordsPage> {
     prefs = await SharedPreferences.getInstance();
   }
 
+  // Timer --------------------------------------------------
+  late Timer _timer;
+  int _start = 1800;
+
+  void startTimer() {
+    const oneSec = Duration(seconds: 1);
+    _timer = Timer.periodic(
+      oneSec,
+      (Timer timers) {
+        if (_start == 0) {
+          setState(() {
+            timers.cancel();
+            timer = false;
+            FlutterBeep.beep();
+            HapticFeedback.lightImpact();
+            var snackBar = SnackBar(
+              backgroundColor: redColor,
+              content: Text(
+                "Waktu telah habis",
+                style: whiteTextStyle,
+              ),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          });
+        } else {
+          _start--;
+        }
+      },
+    );
+  }
+
+  @override
+  void disposeTimer() {
+    setState(() {
+      timer = false;
+      _timer.cancel();
+      HapticFeedback.mediumImpact();
+
+      var snackBar = SnackBar(
+        backgroundColor: redColor,
+        content: Text(
+          "Random & Timer dimatikan",
+          style: whiteTextStyle,
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    var mHeight = MediaQuery.of(context).size.height / 1.7;
+    var mHeight = MediaQuery.of(context).size.height / 2;
 
     return Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+        ),
         body: FutureBuilder<KosaKataModel>(
             future: futureWords,
             builder: (context, snapshot) {
@@ -104,13 +166,27 @@ class _WordsPageState extends State<WordsPage> {
                                   bottomRight: Radius.circular(25))),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 20),
+                          padding: const EdgeInsets.only(top: 20, left: 20),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const SizedBox(
-                                width: 10,
-                              ),
+                              timer
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(250),
+                                      child: Image.asset(
+                                        AppAsset.avatar,
+                                        width: 40,
+                                        height: 40,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                  : Text(
+                                      "Timer off",
+                                      style: whiteTextStyle.copyWith(
+                                          fontSize: 16, fontWeight: medium),
+                                    ),
+                              const Spacer(),
                               InkWell(
                                 onTap: () {
                                   setState(() {
@@ -145,17 +221,45 @@ class _WordsPageState extends State<WordsPage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               const SizedBox(
-                                height: 40,
+                                height: 20,
                               ),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(250),
-                                child: Image.asset(
-                                  AppAsset.avatar,
-                                  width: 120,
-                                  height: 120,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                              timer
+                                  ? SizedBox(
+                                      height: 140,
+                                      width: 140,
+                                      child: CountDownProgressIndicator(
+                                        controller: _controller,
+                                        valueColor: redColor,
+                                        backgroundColor: greyColor,
+                                        initialPosition: 0,
+                                        duration: _start,
+                                        timeFormatter: (seconds) {
+                                          return Duration(seconds: seconds)
+                                              .toString()
+                                              .split('.')[0]
+                                              .padLeft(8, '0');
+                                        },
+                                        text: '30 menit',
+                                        onComplete: () => null,
+                                        timeTextStyle: whiteTextStyle.copyWith(
+                                            fontWeight: bold, fontSize: 20),
+                                        labelTextStyle: whiteTextStyle.copyWith(
+                                            fontSize: 14),
+                                      ),
+                                    )
+                                  : Container(
+                                      margin: const EdgeInsets.only(top: 20),
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(250),
+                                        child: Image.asset(
+                                          AppAsset.avatar,
+                                          width: 120,
+                                          height: 120,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
                             ],
                           ),
                         ),
@@ -173,7 +277,7 @@ class _WordsPageState extends State<WordsPage> {
                               (BuildContext context,
                                   SwiperPluginConfig config) {
                             int activeIndex = indexWord;
-                            int itemCount = config.itemCount + 1;
+                            int itemCount = config.itemCount;
                             return Padding(
                               padding: const EdgeInsets.all(16),
                               child: Stack(
@@ -253,8 +357,13 @@ class _WordsPageState extends State<WordsPage> {
                               setState(() {
                                 if (randomPlay == false) {
                                   randomPlay = true;
+                                  timer = true;
+                                  _start = 1800;
+                                  startTimer();
                                 } else {
                                   randomPlay = false;
+                                  timer = false;
+                                  disposeTimer();
                                 }
                               });
                             },
